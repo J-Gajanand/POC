@@ -1,0 +1,75 @@
+<div class="container">
+  <header>
+    <h1>{{ title }}</h1>
+    <p>Bidirectional Cloud-Edge Telemetry Dashboard</p>
+  </header>
+
+  <div class="stats">
+    <div class="stat-card">
+      <h3>☁️ Cloud Records</h3>
+      <p>{{ cloudTelemetry.length }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>🌐 Edge Records</h3>
+      <p>{{ edgeTelemetry.length }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>📊 Total Records</h3>
+      <p>{{ allTelemetry.length }}</p>
+    </div>
+  </div>
+
+  <div class="charts">
+    <div class="chart">
+      <canvas baseChart
+        [type]="'line'"
+        [data]="temperatureChartConfig.data"
+        [options]="temperatureChartConfig.options">
+      </canvas>
+    </div>
+    <div class="chart">
+      <canvas baseChart
+        [type]="'bar'"
+        [data]="humidityChartConfig.data"
+        [options]="humidityChartConfig.options">
+      </canvas>
+    </div>
+    <div class="chart">
+      <canvas baseChart
+        [type]="'bar'"
+        [data]="pressureChartConfig.data"
+        [options]="pressureChartConfig.options">
+      </canvas>
+    </div>
+  </div>
+
+  <div class="data-table">
+    <h2>📋 All Telemetry Data</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Device ID</th>
+          <th>Temperature</th>
+          <th>Humidity</th>
+          <th>Pressure</th>
+          <th>Source</th>
+          <th>Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of allTelemetry.slice(0, 20)">
+          <td>{{ item.deviceId }}</td>
+          <td>{{ item.temperature }}°C</td>
+          <td>{{ item.humidity }}%</td>
+          <td>{{ item.pressure }} hPa</td>
+          <td>
+            <span [ngClass]="item.source === 'Cloud' ? 'cloud' : 'edge'">
+              {{ item.source }}
+            </span>
+          </td>
+          <td>{{ item.timestamp }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

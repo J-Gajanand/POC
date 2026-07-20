@@ -1,0 +1,6 @@
+@EdgeApp_HostAddress = http://localhost:5215
+
+GET {{EdgeApp_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

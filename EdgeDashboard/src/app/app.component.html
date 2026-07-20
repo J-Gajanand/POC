@@ -1,0 +1,83 @@
+<div class="container">
+  <header>
+    <h1>{{ title }}</h1>
+    <p>Edge Device with Local Storage & Cloud Sync</p>
+  </header>
+
+  <div class="actions">
+    <button class="btn btn-primary" (click)="requestCloud()">
+      📥 Request Data from Cloud
+    </button>
+    <button class="btn btn-success" (click)="generateEdgeData()">
+      📤 Generate & Send to Cloud
+    </button>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <h3>🌐 Local Edge Data</h3>
+      <p>{{ localData.length }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>☁️ Cloud Data Received</h3>
+      <p>{{ cloudData.length }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>✅ Synced to Cloud</h3>
+      <p>{{ localData.filter(t => t.syncedToCloud).length }}</p>
+    </div>
+  </div>
+
+  <div class="charts">
+    <div class="chart">
+      <canvas baseChart
+        [type]="'line'"
+        [data]="temperatureChartConfig.data"
+        [options]="temperatureChartConfig.options">
+      </canvas>
+    </div>
+    <div class="chart">
+      <canvas baseChart
+        [type]="'doughnut'"
+        [data]="syncStatusChartConfig.data"
+        [options]="syncStatusChartConfig.options">
+      </canvas>
+    </div>
+  </div>
+
+  <div class="data-table">
+    <h2>📋 Local SQLite Data</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Device ID</th>
+          <th>Temperature</th>
+          <th>Humidity</th>
+          <th>Pressure</th>
+          <th>Source</th>
+          <th>Synced</th>
+          <th>Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of telemetry.slice(0, 20)">
+          <td>{{ item.deviceId }}</td>
+          <td>{{ item.temperature }}°C</td>
+          <td>{{ item.humidity }}%</td>
+          <td>{{ item.pressure }} hPa</td>
+          <td>
+            <span [ngClass]="item.source === 'Cloud' ? 'cloud' : 'edge'">
+              {{ item.source }}
+            </span>
+          </td>
+          <td>
+            <span [ngClass]="item.syncedToCloud ? 'synced' : 'pending'">
+              {{ item.syncedToCloud ? '✅ Yes' : '⏳ No' }}
+            </span>
+          </td>
+          <td>{{ item.timestamp }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
