@@ -12,12 +12,14 @@ namespace EdgeApp.Controllers
     {
         private readonly EdgeDbContext _context;
         private readonly IActiveMQService _activeMQService;
+        private readonly ITelemetryGenerator _generator;
         private static readonly Random _random = new();
 
-        public TelemetryController(EdgeDbContext context, IActiveMQService activeMQService)
+        public TelemetryController(EdgeDbContext context, IActiveMQService activeMQService, ITelemetryGenerator generator)
         {
             _context = context;
             _activeMQService = activeMQService;
+            _generator = generator;
         }
 
         // GET all local telemetry from SQLite
@@ -39,20 +41,14 @@ namespace EdgeApp.Controllers
             return Ok(new { Message = "📤 Request sent to Cloud" });
         }
 
-        // POST: Generate Edge telemetry and publish to Cloud
+        // POST: Generate one Edge reading on demand and publish to Cloud.
+        // Reuses the same stateful generator the continuous simulator uses, so a manual
+        // reading continues the device's realistic trend instead of jumping randomly.
         [HttpPost("generate")]
         public IActionResult GenerateAndPublish()
         {
-            var telemetry = new Telemetry
-            {
-                DeviceId = $"EDGE-DEVICE-{_random.Next(1, 5)}",
-                Temperature = Math.Round(_random.NextDouble() * 40 + 20, 2),
-                Humidity = Math.Round(_random.NextDouble() * 60 + 20, 2),
-                Pressure = Math.Round(_random.NextDouble() * 50 + 1000, 2),
-                Timestamp = DateTime.UtcNow,
-                Source = "Edge",
-                SyncedToCloud = false
-            };
+            var deviceId = _generator.DeviceIds[_random.Next(_generator.DeviceIds.Count)];
+            var telemetry = _generator.Next(deviceId);
 
             _context.Telemetries.Add(telemetry);
             _context.SaveChanges();

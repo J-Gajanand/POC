@@ -1,1 +1,11 @@
-{"Version":1,"Hash":"usc62rgv+nA0lYL6ACVbZWc5KWGAI/66HuLuTJsVntM=","Source":"CloudApp","BasePath":"/","Mode":"Root","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}
+{
+  "Version": 1,
+  "Hash": "3lLUalu1nolh8nobpGAX/fYYu4CWldJ2xI2dv7CXsFo=",
+  "Source": "CloudApp",
+  "BasePath": "_content/CloudApp",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

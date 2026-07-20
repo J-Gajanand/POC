@@ -1,1 +1,11 @@
-{"Version":1,"Hash":"+AryLe/mmTQzp6y8L1gVmGgVT8PP48g5ykenSSZnSyc=","Source":"EdgeApp","BasePath":"/","Mode":"Root","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}
+{
+  "Version": 1,
+  "Hash": "LsxE7/TGvGEcFIuDkJLCPq2hC5jibNGugqfkbwSSMug=",
+  "Source": "EdgeApp",
+  "BasePath": "_content/EdgeApp",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

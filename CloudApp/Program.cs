@@ -1,5 +1,6 @@
 using CloudApp.Data;
 using CloudApp.Services;
+using CloudApp.Simulation;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,11 @@ builder.Services.AddDbContext<CloudDbContext>(opt =>
 // ActiveMQ
 builder.Services.AddSingleton<IActiveMQService, ActiveMQService>();
 builder.Services.AddHostedService<CloudMessageConsumerService>();
+
+// Continuous cloud-origin telemetry simulator (keeps the Cloud series live).
+builder.Services.Configure<SimulationOptions>(builder.Configuration.GetSection("Simulation"));
+builder.Services.AddSingleton<ITelemetryGenerator, TelemetryGenerator>();
+builder.Services.AddHostedService<CloudSimulatorService>();
 
 // CORS for Angular
 builder.Services.AddCors(opt => opt.AddPolicy("AllowAngular", p =>

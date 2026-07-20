@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "CloudDashboard",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["start", "--prefix", "CloudDashboard", "--", "--port", "4201"],
+      "port": 4201
+    },
+    {
+      "name": "EdgeDashboard",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["start", "--prefix", "EdgeDashboard", "--", "--port", "4200"],
+      "port": 4200
+    }
+  ]
+}

@@ -12,12 +12,13 @@ namespace CloudApp.Controllers
     {
         private readonly CloudDbContext _context;
         private readonly IActiveMQService _activeMQService;
-        private static readonly Random _random = new();
+        private readonly ITelemetryGenerator _generator;
 
-        public TelemetryController(CloudDbContext context, IActiveMQService activeMQService)
+        public TelemetryController(CloudDbContext context, IActiveMQService activeMQService, ITelemetryGenerator generator)
         {
             _context = context;
             _activeMQService = activeMQService;
+            _generator = generator;
         }
 
         // GET all telemetry
@@ -37,24 +38,17 @@ namespace CloudApp.Controllers
             Ok(_context.Telemetries.Where(t => t.Source == "Edge")
                .OrderByDescending(t => t.Timestamp).Take(50).ToList());
 
-        // POST: Generate 10 sample telemetry records in SQL Server
+        // POST: Generate a batch of cloud telemetry on demand (one reading per device),
+        // reusing the same stateful generator the continuous simulator uses.
         [HttpPost("generate")]
         public IActionResult Generate()
         {
-            var list = Enumerable.Range(1, 10).Select(i => new Telemetry
-            {
-                DeviceId = $"CLOUD-DEVICE-{_random.Next(1, 5)}",
-                Temperature = Math.Round(_random.NextDouble() * 40 + 20, 2),
-                Humidity = Math.Round(_random.NextDouble() * 60 + 20, 2),
-                Pressure = Math.Round(_random.NextDouble() * 50 + 1000, 2),
-                Timestamp = DateTime.UtcNow.AddMinutes(-i),
-                Source = "Cloud"
-            }).ToList();
+            var list = _generator.DeviceIds.Select(id => _generator.Next(id)).ToList();
 
             _context.Telemetries.AddRange(list);
             _context.SaveChanges();
 
-            return Ok(new { Message = "10 Cloud telemetry records generated", Count = 10 });
+            return Ok(new { Message = $"{list.Count} Cloud telemetry records generated", Count = list.Count });
         }
     }
 }

@@ -1,5 +1,6 @@
 using EdgeApp.Data;
 using EdgeApp.Services;
+using EdgeApp.Simulation;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,11 @@ builder.Services.AddDbContext<EdgeDbContext>(opt =>
 // ActiveMQ
 builder.Services.AddSingleton<IActiveMQService, ActiveMQService>();
 builder.Services.AddHostedService<EdgeMessageConsumerService>();
+
+// Continuous industrial telemetry simulator (backend-driven, no UI interaction).
+builder.Services.Configure<SimulationOptions>(builder.Configuration.GetSection("Simulation"));
+builder.Services.AddSingleton<ITelemetryGenerator, TelemetryGenerator>();
+builder.Services.AddHostedService<DeviceSimulatorService>();
 
 // CORS
 builder.Services.AddCors(opt => opt.AddPolicy("AllowAngular", p =>
