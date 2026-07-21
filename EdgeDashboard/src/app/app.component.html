@@ -1,112 +1,145 @@
-<div class="shell">
-  <header class="appbar">
-    <div class="brand">
-      <span class="brand-mark">ABB</span>
-      <div class="brand-text">
-        <h1>{{ title }}</h1>
-        <p>{{ subtitle }}</p>
-      </div>
-    </div>
-    <div class="appbar-right">
-      <div class="live" [class.live--stale]="!!error()"><span class="live-dot"></span>{{ error() ? 'DISCONNECTED' : 'LIVE' }}</div>
-      <div class="updated" *ngIf="lastUpdated()">Updated {{ lastUpdated() | date:'HH:mm:ss' }}</div>
-    </div>
-  </header>
+<span class="dashboard-shell lay-column">
+  <app-header
+    [applicationName]="title"
+    [subLogoText]="subtitle"
+    [isHamburgerPresent]="false"
+    [isBreadcrumbPresent]="false">
+  </app-header>
 
-  <main class="content">
-    <div class="banner banner--error" *ngIf="error()"><span class="banner-icon">⚠</span><span>{{ error() }}</span></div>
-    <div class="banner banner--ok" *ngIf="actionMessage()" [class.banner--info]="actionKind() === 'info'">
-      <span class="banner-icon">{{ actionKind() === 'success' ? '✓' : 'ℹ' }}</span><span>{{ actionMessage() }}</span>
-    </div>
+  <span class="content lay-column gap24 fx-1">
 
     <!-- Operational status strip -->
-    <section class="opsbar">
-      <div class="ops"><span class="ops-dot ok"></span><span class="ops-label">Simulator</span><span class="ops-val">{{ error() ? 'Down' : 'Streaming' }}</span></div>
-      <div class="ops"><span class="ops-label">Devices Online</span><span class="ops-val"><app-metric [value]="devicesOnline()"></app-metric></span></div>
-      <div class="ops"><span class="ops-label">Msgs / last min</span><span class="ops-val"><app-metric [value]="recentMessages()"></app-metric></span></div>
-      <div class="ops"><span class="ops-label">Sync Success</span><span class="ops-val"><app-metric [value]="syncRate()"></app-metric>%</span></div>
-      <div class="ops ops-actions">
-        <button class="btn btn-outline" (click)="requestCloud()" [disabled]="busyRequest()">{{ busyRequest() ? 'Requesting…' : '↓ Pull Cloud' }}</button>
-        <button class="btn btn-primary" (click)="generateEdgeData()" [disabled]="busyGenerate()">{{ busyGenerate() ? 'Sending…' : '+ Manual Reading' }}</button>
-      </div>
-    </section>
+    <span class="opsbar lay-row lay-align-space-between-center gap16 fx-wrap">
+      <span class="ops-status lay-row lay-align-start-center gap8 fx-wrap">
+        <app-badge [status]="error() ? 'negative' : 'positive'" [variant]="'rounded-badge'" [label]="error() ? 'Disconnected' : 'Streaming'"></app-badge>
+        <app-badge status="neutral" variant="rounded-badge" [label]="'Devices Online: ' + devicesOnline()"></app-badge>
+        <app-badge status="neutral" variant="rounded-badge" [label]="'Msgs/min: ' + recentMessages()"></app-badge>
+        <app-badge status="neutral" variant="rounded-badge" [label]="'Sync Success: ' + syncRate() + '%'"></app-badge>
+        <app-badge *ngIf="lastUpdated()" status="secondary" variant="rounded-badge" [label]="'Updated ' + (lastUpdated() | date:'HH:mm:ss')"></app-badge>
+      </span>
+      <span class="ops-actions lay-row gap12">
+        <app-button [label]="busyRequest() ? 'Requesting…' : 'Pull Cloud'" type="secondary" [size]="40" [disabled]="busyRequest()" (buttonHandler)="requestCloud()"></app-button>
+        <app-button [label]="busyGenerate() ? 'Sending…' : 'Manual Reading'" type="primary" [size]="40" [disabled]="busyGenerate()" (buttonHandler)="generateEdgeData()"></app-button>
+      </span>
+    </span>
 
     <!-- KPI cards -->
-    <section class="kpi-grid">
+    <span class="kpi-grid lay-row gap16 fx-wrap">
       <ng-container *ngIf="!loading(); else kpiSkeleton">
-        <div class="kpi">
-          <div class="kpi-top"><span class="kpi-chip chip-edge">◈</span><span class="kpi-label">Local Edge Data</span></div>
-          <div class="kpi-value"><app-metric [value]="localData().length"></app-metric></div>
-          <div class="kpi-foot">Stored in SQLite</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-top"><span class="kpi-chip chip-cloud">☁</span><span class="kpi-label">Cloud Data Received</span></div>
-          <div class="kpi-value"><app-metric [value]="cloudData().length"></app-metric></div>
-          <div class="kpi-foot">Pulled from Cloud</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-top"><span class="kpi-chip chip-ok">✓</span><span class="kpi-label">Synced to Cloud</span></div>
-          <div class="kpi-value"><app-metric [value]="syncedCount()"></app-metric></div>
-          <div class="kpi-foot">Acknowledged by Cloud</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-top"><span class="kpi-chip chip-warn">⏳</span><span class="kpi-label">Pending Sync</span></div>
-          <div class="kpi-value"><app-metric [value]="pendingCount()"></app-metric></div>
-          <div class="kpi-foot">Awaiting acknowledgement</div>
-        </div>
+        <span class="wd-25 fx-shrink0">
+          <app-card [isUnClickable]="true">
+            <span class="lay-column gap8">
+              <span class="lay-row lay-align-start-center gap8"><app-badge status="secondary" variant="dot-label"></app-badge><span class="font-size-14">Local Edge Data</span></span>
+              <span class="font-size-32 fw500"><app-metric [value]="localData().length"></app-metric></span>
+              <span class="font-size-12">Stored in SQLite</span>
+            </span>
+          </app-card>
+        </span>
+        <span class="wd-25 fx-shrink0">
+          <app-card [isUnClickable]="true">
+            <span class="lay-column gap8">
+              <span class="lay-row lay-align-start-center gap8"><app-badge status="primary" variant="dot-label"></app-badge><span class="font-size-14">Cloud Data Received</span></span>
+              <span class="font-size-32 fw500"><app-metric [value]="cloudData().length"></app-metric></span>
+              <span class="font-size-12">Pulled from Cloud</span>
+            </span>
+          </app-card>
+        </span>
+        <span class="wd-25 fx-shrink0">
+          <app-card [isUnClickable]="true">
+            <span class="lay-column gap8">
+              <span class="lay-row lay-align-start-center gap8"><app-badge status="positive" variant="dot-label"></app-badge><span class="font-size-14">Synced to Cloud</span></span>
+              <span class="font-size-32 fw500"><app-metric [value]="syncedCount()"></app-metric></span>
+              <span class="font-size-12">Acknowledged by Cloud</span>
+            </span>
+          </app-card>
+        </span>
+        <span class="wd-25 fx-shrink0">
+          <app-card [isUnClickable]="true">
+            <span class="lay-column gap8">
+              <span class="lay-row lay-align-start-center gap8"><app-badge status="warning" variant="dot-label"></app-badge><span class="font-size-14">Pending Sync</span></span>
+              <span class="font-size-32 fw500"><app-metric [value]="pendingCount()"></app-metric></span>
+              <span class="font-size-12">Awaiting acknowledgement</span>
+            </span>
+          </app-card>
+        </span>
       </ng-container>
       <ng-template #kpiSkeleton>
-        <div class="kpi" *ngFor="let s of [1,2,3,4]"><div class="sk sk-line" style="width:60%"></div><div class="sk sk-value"></div><div class="sk sk-line" style="width:40%"></div></div>
+        <span class="wd-25 fx-shrink0" *ngFor="let s of [1,2,3,4]">
+          <app-card [isUnClickable]="true">
+            <app-loading-indicator [variant]="'lazy-load'" [size]="'small'" [label]="'Loading…'"></app-loading-indicator>
+          </app-card>
+        </span>
       </ng-template>
-    </section>
+    </span>
 
     <!-- Charts -->
-    <section class="chart-grid">
-      <div class="card chart-card chart-wide">
-        <div class="card-head"><h2>Temperature Trend — rolling {{ cfg.chartHistoryPoints }} pts</h2><span class="tag">°C</span></div>
-        <div class="chart-canvas tall">
-          <canvas baseChart [type]="'line'" [data]="temperatureData" [options]="temperatureOptions"></canvas>
-          <div class="chart-empty" *ngIf="!hasData()">{{ loading() ? 'Awaiting telemetry…' : 'No telemetry yet' }}</div>
-        </div>
-      </div>
-      <div class="card chart-card">
-        <div class="card-head"><h2>Sync Status</h2><span class="tag">{{ syncRate() }}%</span></div>
-        <div class="chart-canvas tall">
-          <canvas baseChart [type]="'doughnut'" [data]="syncStatusData" [options]="syncStatusOptions"></canvas>
-          <div class="chart-empty" *ngIf="!localData().length">{{ loading() ? 'Loading…' : 'No local data yet' }}</div>
-        </div>
-      </div>
-    </section>
+    <span class="chart-grid lay-row gap16 fx-wrap">
+      <span class="fx70 fx-shrink0">
+        <app-card [isUnClickable]="true">
+          <span class="lay-column gap16 ht-100">
+            <span class="lay-row lay-align-space-between-center">
+              <app-title [size]="18" [title]="'Temperature Trend'" [secondaryText]="'rolling ' + cfg.chartHistoryPoints + ' pts'"></app-title>
+              <app-badge status="neutral" variant="rounded-badge" label="°C"></app-badge>
+            </span>
+            <span class="chart-canvas tall">
+              <canvas baseChart [type]="'line'" [data]="temperatureData" [options]="temperatureOptions"></canvas>
+              <span class="chart-empty" *ngIf="!hasData()">{{ loading() ? 'Awaiting telemetry…' : 'No telemetry yet' }}</span>
+            </span>
+          </span>
+        </app-card>
+      </span>
+      <span class="fx30 fx-shrink0">
+        <app-card [isUnClickable]="true">
+          <span class="lay-column gap16 ht-100">
+            <span class="lay-row lay-align-space-between-center">
+              <app-title [size]="18" [title]="'Sync Status'"></app-title>
+              <app-badge status="neutral" variant="rounded-badge" [label]="syncRate() + '%'"></app-badge>
+            </span>
+            <span class="chart-canvas tall">
+              <canvas baseChart [type]="'doughnut'" [data]="syncStatusData" [options]="syncStatusOptions"></canvas>
+              <span class="chart-empty" *ngIf="!localData().length">{{ loading() ? 'Loading…' : 'No local data yet' }}</span>
+            </span>
+          </span>
+        </app-card>
+      </span>
+    </span>
 
     <!-- Live event log -->
-    <section class="card table-card">
-      <div class="card-head">
-        <h2>Live SQLite Event Log</h2>
-        <span class="tag" *ngIf="hasData()"><span class="live-dot sm"></span>{{ telemetry().length }} records</span>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Device ID</th><th>Temp</th><th>Humidity</th><th>Pressure</th><th>Source</th><th>Synced</th><th>Timestamp</th></tr></thead>
-          <tbody>
-            <tr *ngFor="let item of telemetry().slice(0, cfg.tableHistoryRows); trackBy: trackByRow" [class.row-new]="isNew(item.id)">
-              <td class="mono">{{ item.deviceId }}</td>
-              <td>{{ item.temperature }} °C</td>
-              <td>{{ item.humidity }} %</td>
-              <td>{{ item.pressure }} hPa</td>
-              <td><span class="badge" [class.badge--cloud]="item.source === 'Cloud'" [class.badge--edge]="item.source === 'Edge'">{{ item.source }}</span></td>
-              <td><span class="badge" [class.badge--ok]="item.syncedToCloud" [class.badge--pending]="!item.syncedToCloud">{{ item.syncedToCloud ? 'Synced' : 'Pending' }}</span></td>
-              <td class="mono muted">{{ item.timestamp | date:'HH:mm:ss' }}</td>
-            </tr>
-            <tr *ngIf="loading() && !hasData()" class="sk-row"><td colspan="7"><div class="sk sk-line"></div></td></tr>
-            <tr *ngIf="loading() && !hasData()" class="sk-row"><td colspan="7"><div class="sk sk-line"></div></td></tr>
-            <tr *ngIf="loading() && !hasData()" class="sk-row"><td colspan="7"><div class="sk sk-line"></div></td></tr>
-          </tbody>
-        </table>
-        <div class="empty" *ngIf="!loading() && !hasData()">
-          <div class="empty-icon">📡</div><h3>No local telemetry yet</h3>
-          <p>The Edge device simulator publishes continuously. Records should appear within a few seconds once EdgeApp is running.</p>
-        </div>
-      </div>
-    </section>
-  </main>
-</div>
+    <app-card [isUnClickable]="true">
+      <span class="lay-column gap16">
+        <span class="lay-row lay-align-space-between-center">
+          <app-title [size]="18" [title]="'Live SQLite Event Log'"></app-title>
+          <app-badge *ngIf="hasData()" status="secondary" variant="rounded-badge" [label]="telemetry().length + ' records'"></app-badge>
+        </span>
+
+        <app-arc-generic-table [data]="telemetry().slice(0, cfg.tableHistoryRows)" [isTableDataLoading]="loading()" [size]="32" [loadingMessage]="'Loading telemetry…'">
+          <app-arc-table-column columnDef="deviceId" header="Device ID">
+            <ng-template #cellTemplate let-row><span class="mono">{{ row.deviceId }}</span></ng-template>
+          </app-arc-table-column>
+          <app-arc-table-column columnDef="temperature" header="Temp">
+            <ng-template #cellTemplate let-row><span>{{ row.temperature }} °C</span></ng-template>
+          </app-arc-table-column>
+          <app-arc-table-column columnDef="humidity" header="Humidity">
+            <ng-template #cellTemplate let-row><span>{{ row.humidity }} %</span></ng-template>
+          </app-arc-table-column>
+          <app-arc-table-column columnDef="pressure" header="Pressure">
+            <ng-template #cellTemplate let-row><span>{{ row.pressure }} hPa</span></ng-template>
+          </app-arc-table-column>
+          <app-arc-table-column columnDef="source" header="Source">
+            <ng-template #cellTemplate let-row>
+              <app-badge [status]="row.source === 'Cloud' ? 'primary' : 'secondary'" variant="rounded-badge" [label]="row.source"></app-badge>
+            </ng-template>
+          </app-arc-table-column>
+          <app-arc-table-column columnDef="syncedToCloud" header="Synced">
+            <ng-template #cellTemplate let-row>
+              <app-badge [status]="row.syncedToCloud ? 'positive' : 'warning'" variant="rounded-badge" [label]="row.syncedToCloud ? 'Synced' : 'Pending'"></app-badge>
+            </ng-template>
+          </app-arc-table-column>
+          <app-arc-table-column columnDef="timestamp" header="Timestamp">
+            <ng-template #cellTemplate let-row><span class="mono">{{ row.timestamp | date:'HH:mm:ss' }}</span></ng-template>
+          </app-arc-table-column>
+        </app-arc-generic-table>
+      </span>
+    </app-card>
+  </span>
+</span>

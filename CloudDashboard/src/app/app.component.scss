@@ -1,0 +1,45 @@
+@use '../../node_modules/@abb/arcadia-angular-v2/assets/core-scss/variables' as *;
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: $abb-background-bg;
+  font-family: $abb-typography-font-family;
+}
+
+.content {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: $abb-size-24 $abb-size-24 $abb-size-48;
+}
+
+.chart-canvas {
+  position: relative;
+  height: 280px;
+}
+.chart-canvas.tall {
+  height: 320px;
+}
+.chart-empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: $abb-text-secondary-color;
+  font-size: $abb-typography-font-size-12;
+}
+
+.mono {
+  font-family: 'Cascadia Code', 'Consolas', monospace;
+  font-size: $abb-typography-font-size-14;
+}
+
+@media (max-width: 1080px) {
+  .kpi-grid .wd-25 {
+    width: 50%;
+  }
+  .chart-grid .fx70,
+  .chart-grid .fx30 {
+    flex: 1 1 100%;
+  }
+}

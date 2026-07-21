@@ -2,6 +2,18 @@ import { Component, OnInit, OnDestroy, AfterViewInit, ViewChildren, QueryList, s
 import { CommonModule } from '@angular/common';
 import { ChartConfiguration } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import {
+  HeaderComponent,
+  BadgeComponent,
+  ButtonComponent,
+  CardComponent,
+  TitleComponent,
+  ArcGenericTableComponent,
+  ArcTableColumnComponent,
+  LoadingIndicatorComponent,
+  NotificationComponent
+} from '@abb/arcadia-angular-v2';
 import { TelemetryService, Telemetry } from './services/telemetry.service';
 import { MetricValueComponent } from './shared/metric-value.component';
 import { DASHBOARD_CONFIG, parseUtc, timeLabel } from './dashboard.config';
@@ -9,9 +21,21 @@ import { DASHBOARD_CONFIG, parseUtc, timeLabel } from './dashboard.config';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+  styleUrls: ['./app.component.scss'],
   standalone: true,
-  imports: [CommonModule, BaseChartDirective, MetricValueComponent]
+  imports: [
+    CommonModule,
+    BaseChartDirective,
+    MetricValueComponent,
+    HeaderComponent,
+    BadgeComponent,
+    ButtonComponent,
+    CardComponent,
+    TitleComponent,
+    ArcGenericTableComponent,
+    ArcTableColumnComponent,
+    LoadingIndicatorComponent
+  ]
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   title = 'Edge Telemetry';
@@ -29,10 +53,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   loading = signal(true);
   error = signal<string | null>(null);
   lastUpdated = signal<Date | null>(null);
-  newIds = signal<Set<number>>(new Set());
 
-  actionMessage = signal<string | null>(null);
-  actionKind = signal<'success' | 'info'>('success');
   busyRequest = signal(false);
   busyGenerate = signal(false);
 
@@ -83,8 +104,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private lastSeenId = 0;
   private viewReady = false;
   private timer: any = null;
+  private wasError = false;
 
-  constructor(private telemetryService: TelemetryService) {}
+  constructor(private telemetryService: TelemetryService, private snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
     this.poll();
@@ -93,18 +115,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void { this.viewReady = true; this.refreshCharts(); }
   ngOnDestroy(): void { if (this.timer) { clearInterval(this.timer); } }
 
-  trackByRow = (_: number, item: Telemetry) => item.id;
-  isNew = (id: number) => this.newIds().has(id);
-
   private poll(): void {
     this.telemetryService.getAllTelemetry().subscribe({
       next: (data) => {
         const list = data ?? [];
         const maxId = list.reduce((m, t) => Math.max(m, t.id), 0);
-        if (this.lastMaxId > 0) { this.newIds.set(new Set(list.filter(t => t.id > this.lastMaxId).map(t => t.id))); }
         this.lastMaxId = Math.max(this.lastMaxId, maxId);
         this.telemetry.set(list);
         this.error.set(null);
+        this.wasError = false;
         this.loading.set(false);
         this.lastUpdated.set(new Date());
 
@@ -115,6 +134,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       error: () => {
         this.loading.set(false);
         this.error.set('Cannot reach Edge API at http://localhost:5001. Confirm EdgeApp is running.');
+        if (!this.wasError) {
+          this.notify('Cannot reach Edge API at http://localhost:5001.', 'error');
+          this.wasError = true;
+        }
       }
     });
   }
@@ -161,20 +184,25 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   requestCloud(): void {
     this.busyRequest.set(true);
     this.telemetryService.requestFromCloud().subscribe({
-      next: () => { this.flash('Request sent to Cloud — data will sync into SQLite shortly.', 'info'); this.busyRequest.set(false); setTimeout(() => this.poll(), 1200); },
-      error: () => { this.flash('Failed to reach Edge API.', 'info'); this.busyRequest.set(false); }
+      next: () => { this.notify('Request sent to Cloud — data will sync into SQLite shortly.', 'primary'); this.busyRequest.set(false); setTimeout(() => this.poll(), 1200); },
+      error: () => { this.notify('Failed to reach Edge API.', 'error'); this.busyRequest.set(false); }
     });
   }
   generateEdgeData(): void {
     this.busyGenerate.set(true);
     this.telemetryService.generateTelemetry().subscribe({
-      next: () => { this.flash('Manual reading generated and published to Cloud.', 'success'); this.busyGenerate.set(false); setTimeout(() => this.poll(), 1200); },
-      error: () => { this.flash('Failed to reach Edge API.', 'info'); this.busyGenerate.set(false); }
+      next: () => { this.notify('Manual reading generated and published to Cloud.', 'success'); this.busyGenerate.set(false); setTimeout(() => this.poll(), 1200); },
+      error: () => { this.notify('Failed to reach Edge API.', 'error'); this.busyGenerate.set(false); }
     });
   }
-  private flash(msg: string, kind: 'success' | 'info'): void {
-    this.actionMessage.set(msg);
-    this.actionKind.set(kind);
-    setTimeout(() => this.actionMessage.set(null), 4000);
+
+  /** Arcadia toast — replaces the old inline action/error banners. */
+  private notify(primaryText: string, state: 'success' | 'primary' | 'error' | 'warn' | 'neutral'): void {
+    this.snackBar.openFromComponent(NotificationComponent, {
+      data: { variant: 'floating', state, primaryText },
+      duration: 4000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top'
+    });
   }
 }

@@ -2,6 +2,17 @@ import { Component, OnInit, OnDestroy, AfterViewInit, ViewChildren, QueryList, s
 import { CommonModule } from '@angular/common';
 import { ChartConfiguration } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import {
+  HeaderComponent,
+  BadgeComponent,
+  CardComponent,
+  TitleComponent,
+  ArcGenericTableComponent,
+  ArcTableColumnComponent,
+  LoadingIndicatorComponent,
+  NotificationComponent
+} from '@abb/arcadia-angular-v2';
 import { TelemetryService, Telemetry } from './services/telemetry.service';
 import { MetricValueComponent } from './shared/metric-value.component';
 import { DASHBOARD_CONFIG, parseUtc, timeLabel } from './dashboard.config';
@@ -9,9 +20,20 @@ import { DASHBOARD_CONFIG, parseUtc, timeLabel } from './dashboard.config';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+  styleUrls: ['./app.component.scss'],
   standalone: true,
-  imports: [CommonModule, BaseChartDirective, MetricValueComponent]
+  imports: [
+    CommonModule,
+    BaseChartDirective,
+    MetricValueComponent,
+    HeaderComponent,
+    BadgeComponent,
+    CardComponent,
+    TitleComponent,
+    ArcGenericTableComponent,
+    ArcTableColumnComponent,
+    LoadingIndicatorComponent
+  ]
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   title = 'Cloud Telemetry';
@@ -29,7 +51,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   loading = signal(true);
   error = signal<string | null>(null);
   lastUpdated = signal<Date | null>(null);
-  newIds = signal<Set<number>>(new Set());
   totalTrend = signal<'up' | 'flat'>('flat');
 
   hasData = computed(() => this.allTelemetry().length > 0);
@@ -80,8 +101,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private lastSeenId = 0;     // for rolling-buffer append
   private viewReady = false;
   private timer: any = null;
+  private wasError = false;
 
-  constructor(private telemetryService: TelemetryService) {}
+  constructor(private telemetryService: TelemetryService, private snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
     this.poll();
@@ -90,9 +112,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void { this.viewReady = true; this.refreshCharts(); }
   ngOnDestroy(): void { if (this.timer) { clearInterval(this.timer); } }
 
-  trackByRow = (_: number, item: Telemetry) => item.id;
-  isNew = (id: number) => this.newIds().has(id);
-
   private poll(): void {
     this.telemetryService.getAllTelemetry().subscribe({
       next: (data) => {
@@ -100,11 +119,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // Card / table / ops state (signals → text + rows update, layout stays put).
         const maxId = list.reduce((m, t) => Math.max(m, t.id), 0);
-        if (this.lastMaxId > 0) { this.newIds.set(new Set(list.filter(t => t.id > this.lastMaxId).map(t => t.id))); }
         this.totalTrend.set(list.length > this.allTelemetry().length ? 'up' : 'flat');
         this.lastMaxId = Math.max(this.lastMaxId, maxId);
         this.allTelemetry.set(list);
         this.error.set(null);
+        this.wasError = false;
         this.loading.set(false);
         this.lastUpdated.set(new Date());
 
@@ -116,6 +135,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       error: () => {
         this.loading.set(false);
         this.error.set('Cannot reach Cloud API at http://localhost:5126. Confirm CloudApp is running.');
+        if (!this.wasError) {
+          this.notify('Cannot reach Cloud API at http://localhost:5126.', 'error');
+          this.wasError = true;
+        }
       }
     });
   }
@@ -178,5 +201,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private replaceInPlace<T>(target: T[], next: T[]): void {
     target.length = 0;
     for (const v of next) { target.push(v); }
+  }
+
+  /** Arcadia toast — replaces the old inline error banner. */
+  private notify(primaryText: string, state: 'success' | 'primary' | 'error' | 'warn' | 'neutral'): void {
+    this.snackBar.openFromComponent(NotificationComponent, {
+      data: { variant: 'floating', state, primaryText },
+      duration: 4000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top'
+    });
   }
 }

@@ -1,0 +1,11 @@
+// Arcadia UI theme — imported exactly once for the whole application.
+@use '../node_modules/@abb/arcadia-angular-v2/assets/arcadia-styles.scss';
+@use '../node_modules/@abb/arcadia-angular-v2/assets/core-scss/variables' as *;
+
+/* Global reset for the dashboard shell */
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: $abb-typography-font-family;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}

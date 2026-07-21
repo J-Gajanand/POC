@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\INNIKAM4\\Downloads\\POC\\POC\\CloudApp\\CloudApp.csproj": {}
+    "C:\\Users\\INKARED8\\Documents\\POC\\CloudApp\\CloudApp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\INNIKAM4\\Downloads\\POC\\POC\\CloudApp\\CloudApp.csproj": {
+    "C:\\Users\\INKARED8\\Documents\\POC\\CloudApp\\CloudApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\INNIKAM4\\Downloads\\POC\\POC\\CloudApp\\CloudApp.csproj",
+        "projectUniqueName": "C:\\Users\\INKARED8\\Documents\\POC\\CloudApp\\CloudApp.csproj",
         "projectName": "CloudApp",
-        "projectPath": "C:\\Users\\INNIKAM4\\Downloads\\POC\\POC\\CloudApp\\CloudApp.csproj",
-        "packagesPath": "C:\\Users\\INNIKAM4\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\INNIKAM4\\Downloads\\POC\\POC\\CloudApp\\obj\\",
+        "projectPath": "C:\\Users\\INKARED8\\Documents\\POC\\CloudApp\\CloudApp.csproj",
+        "packagesPath": "C:\\Users\\INKARED8\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\INKARED8\\Documents\\POC\\CloudApp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\INNIKAM4\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\INKARED8\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
