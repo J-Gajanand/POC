@@ -4,7 +4,7 @@
  */
 export const DASHBOARD_CONFIG = {
   /** How often the dashboard pulls fresh telemetry from the API (ms). */
-  refreshIntervalMs: 2000,
+  refreshIntervalMs: 10000,
   /** Rolling time-series window: max points kept on the temperature chart. */
   chartHistoryPoints: 30,
   /** Live event-log: max rows shown in the telemetry table. */

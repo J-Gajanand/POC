@@ -65,14 +65,14 @@
       <div class="card chart-card chart-wide">
         <div class="card-head"><h2>Temperature Trend — rolling {{ cfg.chartHistoryPoints }} pts</h2><span class="tag">°C</span></div>
         <div class="chart-canvas tall">
-          <canvas baseChart *ngIf="hasData()" [type]="'line'" [data]="temperatureData()" [options]="temperatureOptions"></canvas>
+          <canvas baseChart [type]="'line'" [data]="temperatureData" [options]="temperatureOptions"></canvas>
           <div class="chart-empty" *ngIf="!hasData()">{{ loading() ? 'Awaiting telemetry…' : 'No telemetry yet' }}</div>
         </div>
       </div>
       <div class="card chart-card">
         <div class="card-head"><h2>Sync Status</h2><span class="tag">{{ syncRate() }}%</span></div>
         <div class="chart-canvas tall">
-          <canvas baseChart *ngIf="localData().length" [type]="'doughnut'" [data]="syncStatusData()" [options]="syncStatusOptions"></canvas>
+          <canvas baseChart [type]="'doughnut'" [data]="syncStatusData" [options]="syncStatusOptions"></canvas>
           <div class="chart-empty" *ngIf="!localData().length">{{ loading() ? 'Loading…' : 'No local data yet' }}</div>
         </div>
       </div>

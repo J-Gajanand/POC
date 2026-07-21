@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChildren, QueryList, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChartConfiguration } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
@@ -13,12 +13,15 @@ import { DASHBOARD_CONFIG, parseUtc, timeLabel } from './dashboard.config';
   standalone: true,
   imports: [CommonModule, BaseChartDirective, MetricValueComponent]
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   title = 'Edge Telemetry';
   subtitle = 'Continuous Local Store & Cloud Sync';
   readonly cfg = DASHBOARD_CONFIG;
 
-  // ---- Reactive state (signals — zoneless app) ----
+  /** Persistent chart directives — created once, never recreated. */
+  @ViewChildren(BaseChartDirective) private chartDirectives?: QueryList<BaseChartDirective>;
+
+  // ---- Reactive state for cards / table / ops (signals) ----
   telemetry = signal<Telemetry[]>([]);
   localData = computed(() => this.telemetry().filter(t => t.source === 'Edge'));
   cloudData = computed(() => this.telemetry().filter(t => t.source === 'Cloud'));
@@ -26,18 +29,16 @@ export class AppComponent implements OnInit, OnDestroy {
   loading = signal(true);
   error = signal<string | null>(null);
   lastUpdated = signal<Date | null>(null);
+  newIds = signal<Set<number>>(new Set());
 
   actionMessage = signal<string | null>(null);
   actionKind = signal<'success' | 'info'>('success');
   busyRequest = signal(false);
   busyGenerate = signal(false);
-  newIds = signal<Set<number>>(new Set());
 
   syncedCount = computed(() => this.localData().filter(t => t.syncedToCloud).length);
   pendingCount = computed(() => this.localData().filter(t => !t.syncedToCloud).length);
   hasData = computed(() => this.telemetry().length > 0);
-
-  // ---- Operational metrics ----
   devicesOnline = computed(() => {
     const cutoff = Date.now() - this.cfg.deviceOnlineWindowMs;
     return new Set(this.telemetry().filter(t => parseUtc(t.timestamp) >= cutoff).map(t => t.deviceId)).size;
@@ -51,23 +52,37 @@ export class AppComponent implements OnInit, OnDestroy {
     return total ? Math.round((this.syncedCount() / total) * 100) : 0;
   });
 
-  private lastMaxId = 0;
-  private timer: any = null;
-
-  // ---- Chart options ----
+  // ---- Chart OPTIONS (static) ----
   temperatureOptions: ChartConfiguration<'line'>['options'] = {
-    responsive: true, maintainAspectRatio: false, animation: { duration: 300 },
+    responsive: true, maintainAspectRatio: false,
+    animation: { duration: 650, easing: 'easeOutCubic' },
     interaction: { mode: 'index', intersect: false },
     plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, padding: 16 } }, tooltip: { enabled: true } },
     scales: { x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 8 } }, y: { grid: { color: 'rgba(0,0,0,0.06)' } } }
   };
   syncStatusOptions: ChartConfiguration<'doughnut'>['options'] = {
-    responsive: true, maintainAspectRatio: false, cutout: '65%', animation: { duration: 300 },
+    responsive: true, maintainAspectRatio: false, cutout: '65%',
+    animation: { duration: 650, easing: 'easeOutCubic' },
     plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, padding: 16 } }, tooltip: { enabled: true } }
   };
 
-  temperatureData = signal<ChartConfiguration<'line'>['data']>({ labels: [], datasets: [] });
-  syncStatusData = signal<ChartConfiguration<'doughnut'>['data']>({ labels: ['Synced', 'Pending'], datasets: [] });
+  // ---- Chart DATA (STABLE objects, created once, mutated in place) ----
+  temperatureData: ChartConfiguration<'line'>['data'] = {
+    labels: [],
+    datasets: [
+      { label: 'Local Edge °C', data: [], borderColor: '#3b6fe0', backgroundColor: 'rgba(59,111,224,0.10)', tension: 0.35, fill: true, pointRadius: 0, borderWidth: 2, spanGaps: true },
+      { label: 'Synced Cloud °C', data: [], borderColor: '#E30613', backgroundColor: 'rgba(227,6,19,0.08)', tension: 0.35, fill: true, pointRadius: 0, borderWidth: 2, spanGaps: true }
+    ]
+  };
+  syncStatusData: ChartConfiguration<'doughnut'>['data'] = {
+    labels: ['Synced', 'Pending'],
+    datasets: [{ data: [0, 0], backgroundColor: ['#16a34a', '#f59e0b'], borderWidth: 0 }]
+  };
+
+  private lastMaxId = 0;
+  private lastSeenId = 0;
+  private viewReady = false;
+  private timer: any = null;
 
   constructor(private telemetryService: TelemetryService) {}
 
@@ -75,6 +90,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.poll();
     this.timer = setInterval(() => this.poll(), this.cfg.refreshIntervalMs);
   }
+  ngAfterViewInit(): void { this.viewReady = true; this.refreshCharts(); }
   ngOnDestroy(): void { if (this.timer) { clearInterval(this.timer); } }
 
   trackByRow = (_: number, item: Telemetry) => item.id;
@@ -85,16 +101,16 @@ export class AppComponent implements OnInit, OnDestroy {
       next: (data) => {
         const list = data ?? [];
         const maxId = list.reduce((m, t) => Math.max(m, t.id), 0);
-        if (this.lastMaxId > 0) {
-          this.newIds.set(new Set(list.filter(t => t.id > this.lastMaxId).map(t => t.id)));
-        }
+        if (this.lastMaxId > 0) { this.newIds.set(new Set(list.filter(t => t.id > this.lastMaxId).map(t => t.id))); }
         this.lastMaxId = Math.max(this.lastMaxId, maxId);
-
         this.telemetry.set(list);
-        this.updateCharts(list);
         this.error.set(null);
         this.loading.set(false);
         this.lastUpdated.set(new Date());
+
+        this.updateRollingLine(list);
+        this.updateDonut();
+        this.refreshCharts();
       },
       error: () => {
         this.loading.set(false);
@@ -103,21 +119,43 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
-  private updateCharts(list: Telemetry[]): void {
-    const window = [...list].sort((a, b) => parseUtc(a.timestamp) - parseUtc(b.timestamp)).slice(-this.cfg.chartHistoryPoints);
-    const labels = window.map(t => timeLabel(t.timestamp));
-    this.temperatureData.set({
-      labels,
-      datasets: [
-        { label: 'Local Edge °C', data: window.map(t => t.source === 'Edge' ? t.temperature : null), borderColor: '#3b6fe0', backgroundColor: 'rgba(59,111,224,0.10)', tension: 0.35, fill: true, pointRadius: 0, borderWidth: 2, spanGaps: true },
-        { label: 'Synced Cloud °C', data: window.map(t => t.source === 'Cloud' ? t.temperature : null), borderColor: '#E30613', backgroundColor: 'rgba(227,6,19,0.08)', tension: 0.35, fill: true, pointRadius: 0, borderWidth: 2, spanGaps: true }
-      ]
-    });
+  /** Rolling historian buffer: append new samples, drop the oldest — never rebuild. */
+  private updateRollingLine(list: Telemetry[]): void {
+    const labels = this.temperatureData.labels as string[];
+    const local = this.temperatureData.datasets[0].data as (number | null)[];
+    const cloud = this.temperatureData.datasets[1].data as (number | null)[];
 
-    this.syncStatusData.set({
-      labels: ['Synced', 'Pending'],
-      datasets: [{ data: [this.syncedCount(), this.pendingCount()], backgroundColor: ['#16a34a', '#f59e0b'], borderWidth: 0 }]
-    });
+    const push = (t: Telemetry) => {
+      labels.push(timeLabel(t.timestamp));
+      local.push(t.source === 'Edge' ? t.temperature : null);
+      cloud.push(t.source === 'Cloud' ? t.temperature : null);
+    };
+
+    if (this.lastSeenId === 0) {
+      const seed = [...list].sort((a, b) => parseUtc(a.timestamp) - parseUtc(b.timestamp)).slice(-this.cfg.chartHistoryPoints);
+      labels.length = 0; local.length = 0; cloud.length = 0;
+      seed.forEach(push);
+    } else {
+      const fresh = list.filter(t => t.id > this.lastSeenId).sort((a, b) => parseUtc(a.timestamp) - parseUtc(b.timestamp));
+      fresh.forEach(push);
+    }
+
+    const overflow = labels.length - this.cfg.chartHistoryPoints;
+    if (overflow > 0) { labels.splice(0, overflow); local.splice(0, overflow); cloud.splice(0, overflow); }
+
+    this.lastSeenId = Math.max(this.lastSeenId, list.reduce((m, t) => Math.max(m, t.id), 0));
+  }
+
+  /** Donut: update the synced/pending counts in place — the arc animates, chart isn't rebuilt. */
+  private updateDonut(): void {
+    const d = this.syncStatusData.datasets[0].data as number[];
+    d[0] = this.syncedCount();
+    d[1] = this.pendingCount();
+  }
+
+  private refreshCharts(): void {
+    if (!this.viewReady || !this.chartDirectives) { return; }
+    this.chartDirectives.forEach(dir => dir.chart?.update());
   }
 
   requestCloud(): void {
@@ -127,7 +165,6 @@ export class AppComponent implements OnInit, OnDestroy {
       error: () => { this.flash('Failed to reach Edge API.', 'info'); this.busyRequest.set(false); }
     });
   }
-
   generateEdgeData(): void {
     this.busyGenerate.set(true);
     this.telemetryService.generateTelemetry().subscribe({
@@ -135,7 +172,6 @@ export class AppComponent implements OnInit, OnDestroy {
       error: () => { this.flash('Failed to reach Edge API.', 'info'); this.busyGenerate.set(false); }
     });
   }
-
   private flash(msg: string, kind: 'success' | 'info'): void {
     this.actionMessage.set(msg);
     this.actionKind.set(kind);
