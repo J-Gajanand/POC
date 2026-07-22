@@ -3,6 +3,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideTranslateService } from '@ngx-translate/core';
 import { AppComponent } from './app/app.component';
 
 bootstrapApplication(AppComponent, {
@@ -18,6 +19,8 @@ bootstrapApplication(AppComponent, {
     // "line"/"bar" is not a registered controller.
     provideCharts(withDefaultRegisterables()),
     // Required by Arcadia's Material-based components (notification/snackbar, menus, overlays).
-    provideAnimationsAsync()
+    provideAnimationsAsync(),
+    // Required by @abb/arcadia-angular-v2 peer dependency @ngx-translate/core, consumed internally by Arcadia components.
+    provideTranslateService()
   ]
 }).catch(err => console.error(err));

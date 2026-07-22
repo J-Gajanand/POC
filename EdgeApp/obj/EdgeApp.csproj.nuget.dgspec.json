@@ -1,32 +1,29 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Base Building\\Proof Of Concept\\EdgeApp\\EdgeApp.csproj": {}
+    "C:\\Users\\INNIKAM4\\Downloads\\POC\\POC\\EdgeApp\\EdgeApp.csproj": {}
   },
   "projects": {
-    "C:\\Base Building\\Proof Of Concept\\EdgeApp\\EdgeApp.csproj": {
+    "C:\\Users\\INNIKAM4\\Downloads\\POC\\POC\\EdgeApp\\EdgeApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Base Building\\Proof Of Concept\\EdgeApp\\EdgeApp.csproj",
+        "projectUniqueName": "C:\\Users\\INNIKAM4\\Downloads\\POC\\POC\\EdgeApp\\EdgeApp.csproj",
         "projectName": "EdgeApp",
-        "projectPath": "C:\\Base Building\\Proof Of Concept\\EdgeApp\\EdgeApp.csproj",
-        "packagesPath": "C:\\Users\\INJAGAJ\\.nuget\\packages\\",
-        "outputPath": "C:\\Base Building\\Proof Of Concept\\EdgeApp\\obj\\",
+        "projectPath": "C:\\Users\\INNIKAM4\\Downloads\\POC\\POC\\EdgeApp\\EdgeApp.csproj",
+        "packagesPath": "C:\\Users\\INNIKAM4\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\INNIKAM4\\Downloads\\POC\\POC\\EdgeApp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\INJAGAJ\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\INNIKAM4\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
-            "framework": "net8.0",
             "targetAlias": "net8.0",
             "projectReferences": {}
           }
@@ -40,12 +37,10 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "10.0.300"
+        }
       },
       "frameworks": {
         "net8.0": {
-          "framework": "net8.0",
           "targetAlias": "net8.0",
           "dependencies": {
             "Apache.NMS.ActiveMQ": {
@@ -98,7 +93,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.302/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.423/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

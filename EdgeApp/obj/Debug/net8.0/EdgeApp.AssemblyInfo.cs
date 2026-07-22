@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EdgeApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2dc338fd010e48f513171697160b1736694a3d52")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b8bc515adc757ef93ba055bce2a0f0fb5fa95914")]
 [assembly: System.Reflection.AssemblyProductAttribute("EdgeApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EdgeApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
