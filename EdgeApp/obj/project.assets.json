@@ -3165,19 +3165,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\INKARED8\\.nuget\\packages\\": {}
+    "C:\\Users\\INNIKAM4\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\INKARED8\\Documents\\POC\\EdgeApp\\EdgeApp.csproj",
+      "projectUniqueName": "C:\\Users\\INNIKAM4\\Downloads\\POC\\POC\\EdgeApp\\EdgeApp.csproj",
       "projectName": "EdgeApp",
-      "projectPath": "C:\\Users\\INKARED8\\Documents\\POC\\EdgeApp\\EdgeApp.csproj",
-      "packagesPath": "C:\\Users\\INKARED8\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\INKARED8\\Documents\\POC\\EdgeApp\\obj\\",
+      "projectPath": "C:\\Users\\INNIKAM4\\Downloads\\POC\\POC\\EdgeApp\\EdgeApp.csproj",
+      "packagesPath": "C:\\Users\\INNIKAM4\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\INNIKAM4\\Downloads\\POC\\POC\\EdgeApp\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\INKARED8\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\INNIKAM4\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"

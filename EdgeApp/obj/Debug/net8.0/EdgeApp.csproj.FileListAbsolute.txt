@@ -266,6 +266,7 @@ C:\Users\INNIKAM4\Downloads\POC\POC\EdgeApp\obj\Debug\net8.0\refint\EdgeApp.dll
 C:\Users\INNIKAM4\Downloads\POC\POC\EdgeApp\obj\Debug\net8.0\EdgeApp.pdb
 C:\Users\INNIKAM4\Downloads\POC\POC\EdgeApp\obj\Debug\net8.0\EdgeApp.genruntimeconfig.cache
 C:\Users\INNIKAM4\Downloads\POC\POC\EdgeApp\obj\Debug\net8.0\ref\EdgeApp.dll
+<<<<<<< HEAD
 C:\Users\INKARED8\Documents\POC\EdgeApp\bin\Debug\net8.0\appsettings.Development.json
 C:\Users\INKARED8\Documents\POC\EdgeApp\bin\Debug\net8.0\appsettings.json
 C:\Users\INKARED8\Documents\POC\EdgeApp\bin\Debug\net8.0\EdgeApp.exe
@@ -399,3 +400,6 @@ C:\Users\INKARED8\Documents\POC\EdgeApp\obj\Debug\net8.0\refint\EdgeApp.dll
 C:\Users\INKARED8\Documents\POC\EdgeApp\obj\Debug\net8.0\EdgeApp.pdb
 C:\Users\INKARED8\Documents\POC\EdgeApp\obj\Debug\net8.0\EdgeApp.genruntimeconfig.cache
 C:\Users\INKARED8\Documents\POC\EdgeApp\obj\Debug\net8.0\ref\EdgeApp.dll
+=======
+C:\Base Building\Proof Of Concept\EdgeApp\obj\Debug\net8.0\EdgeApp.sourcelink.json
+>>>>>>> 0e3c74050350d98f4bb273d833d4bf1064dff1cc
