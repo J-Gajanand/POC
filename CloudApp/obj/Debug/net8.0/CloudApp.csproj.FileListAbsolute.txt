@@ -426,3 +426,4 @@ C:\Users\INKARED8\Documents\POC\CloudApp\obj\Debug\net8.0\refint\CloudApp.dll
 C:\Users\INKARED8\Documents\POC\CloudApp\obj\Debug\net8.0\CloudApp.pdb
 C:\Users\INKARED8\Documents\POC\CloudApp\obj\Debug\net8.0\CloudApp.genruntimeconfig.cache
 C:\Users\INKARED8\Documents\POC\CloudApp\obj\Debug\net8.0\ref\CloudApp.dll
+C:\Base Building\Proof Of Concept\CloudApp\obj\Debug\net8.0\CloudApp.sourcelink.json

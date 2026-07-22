@@ -266,3 +266,4 @@ C:\Users\INNIKAM4\Downloads\POC\POC\EdgeApp\obj\Debug\net8.0\refint\EdgeApp.dll
 C:\Users\INNIKAM4\Downloads\POC\POC\EdgeApp\obj\Debug\net8.0\EdgeApp.pdb
 C:\Users\INNIKAM4\Downloads\POC\POC\EdgeApp\obj\Debug\net8.0\EdgeApp.genruntimeconfig.cache
 C:\Users\INNIKAM4\Downloads\POC\POC\EdgeApp\obj\Debug\net8.0\ref\EdgeApp.dll
+C:\Base Building\Proof Of Concept\EdgeApp\obj\Debug\net8.0\EdgeApp.sourcelink.json

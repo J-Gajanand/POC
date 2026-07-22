@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "targets": {
     "net8.0": {
       "Apache.NMS/2.2.0": {
@@ -3165,28 +3165,31 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\INKARED8\\.nuget\\packages\\": {}
+    "C:\\Users\\INJAGAJ\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\INKARED8\\Documents\\POC\\EdgeApp\\EdgeApp.csproj",
+      "projectUniqueName": "C:\\Base Building\\Proof Of Concept\\EdgeApp\\EdgeApp.csproj",
       "projectName": "EdgeApp",
-      "projectPath": "C:\\Users\\INKARED8\\Documents\\POC\\EdgeApp\\EdgeApp.csproj",
-      "packagesPath": "C:\\Users\\INKARED8\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\INKARED8\\Documents\\POC\\EdgeApp\\obj\\",
+      "projectPath": "C:\\Base Building\\Proof Of Concept\\EdgeApp\\EdgeApp.csproj",
+      "packagesPath": "C:\\Users\\INJAGAJ\\.nuget\\packages\\",
+      "outputPath": "C:\\Base Building\\Proof Of Concept\\EdgeApp\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\INKARED8\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\INJAGAJ\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net8.0": {
+          "framework": "net8.0",
           "targetAlias": "net8.0",
           "projectReferences": {}
         }
@@ -3200,10 +3203,12 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      }
+      },
+      "SdkAnalysisLevel": "10.0.300"
     },
     "frameworks": {
       "net8.0": {
+        "framework": "net8.0",
         "targetAlias": "net8.0",
         "dependencies": {
           "Apache.NMS.ActiveMQ": {
@@ -3256,7 +3261,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.423/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.302/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
